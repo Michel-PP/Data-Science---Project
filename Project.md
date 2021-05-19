@@ -1,10 +1,17 @@
 Data Science - Project
 ================
 Michel Poupa
+2021-05-21
 
-## Including Code
+## Intro
 
-You can include R code in the document as follows:
+Music consumption through the years has highly evolved and democratized
+itself. Before 1877, if someone wanted to listen to music, they either
+had to know how to play it, or had to pay to go to a concert, an opera…
+but this all changed with the invention of the phonograph, first way to
+have a orchestra at home. It was fairly expensive and thus only the
+wealthiest could access it (only a small possible audience). Through the
+years, the way to
 
 ``` r
 summary(cars)

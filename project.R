@@ -1,11 +1,8 @@
----
-title: "Data Science - Project"
-author: "Michel Poupa"
-date: 2021-05-21
-output: github_document
----
+# compare diff specs with ranking <- combine two data frames, one downloaded and one ranking
+# need to figure out how to open and access the data frame in r
+# can do web scraping for the ranking
+# ranking of favorite types per year/decade
 
-```{r setup, include=FALSE}
 library(tidyverse)
 library(modelr)
 library(modelr)
@@ -26,6 +23,10 @@ hot100_dates <- hot100 %>%
   select(-SongID) %>% 
   mutate(WeekID = as_date(WeekID, format = "%m/%d/%Y"))
 
+
+medium %>% 
+  select(WeekID) %>%
+  mutate(WeekID = dmy(WeekID)) 
 
 data <- inner_join(ABitLessThanAMillionSong,hot100_dates) %>% 
   filter(!is.na(danceability))
@@ -53,27 +54,12 @@ data_00 <- data %>%
 data_10 <- data %>% 
   subset(WeekID >= "2010-01-01" & WeekID <= "2020-12-31")
 
-plot1 <- data_50 %>% 
+  
+  
+data_50 %>% 
   group_by(spotify_genre) %>% 
   ggplot(aes(WeekID, Week.Position, color = SongID)) +
-  geom_line() + theme(legend.position = "none")
-```
-
-
-## Intro
-
-Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have a orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to 
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(plot1)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+  geom_line() + theme(legend.position = "none") 
+  
+  
+  
