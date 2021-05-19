@@ -1,0 +1,13 @@
+name: Project
+title: Project
+username:
+account: michel-p
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4154722
+bundleId: 4616739
+url: https://michel-p.shinyapps.io/Project/
+when: 1621440836.90319
+lastSyncTime: 1621440836.90319
+asMultiple: FALSE
+asStatic: FALSE

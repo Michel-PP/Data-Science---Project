@@ -2,7 +2,8 @@
 title: "Data Science - Project"
 author: "Michel Poupa"
 date: 2021-05-21
-output: github_document
+runtime: shiny
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -14,22 +15,72 @@ library(Hmisc)
 library(scales)
 library(readxl)
 library(lubridate)
+library(shiny)
+
+as_decade <- function(value){ return(value - value %% 10) }
 
 
 ABitLessThanAMillionSong <- read_xlsx("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\Hot 100 Audio Features.xlsx")
 
 hot100 <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\Hot Stuff.csv")
 
+genre <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\genres4.csv", sep = ";") %>% slice(1:1046)
 
 hot100_dates <- hot100 %>% 
   rename(title = Song) %>% 
   select(-SongID) %>% 
-  mutate(WeekID = as_date(WeekID, format = "%m/%d/%Y"))
+  mutate(WeekID = as_date(WeekID, format = "%m/%d/%Y"),
+         year = year(WeekID),
+         decade = as_decade(year))
+
+
 
 
 data <- inner_join(ABitLessThanAMillionSong,hot100_dates) %>% 
-  filter(!is.na(danceability))
+  filter(!is.na(danceability)) %>% 
+  mutate(rock = grepl("rock", spotify_genre),
+         pop = grepl("pop", spotify_genre),
+         country = grepl("country", spotify_genre),
+         soul = grepl("soul", spotify_genre),
+         mellowGold = grepl("mellow gold", spotify_genre),
+         folk = grepl("folk", spotify_genre),
+         rap = grepl("rap", spotify_genre),
+         adultStandarts = grepl("adult standarts", spotify_genre),
+         motown = grepl("motown", spotify_genre),
+         hipHop = grepl("hip hop", spotify_genre),
+         quietStorm = grepl("quiet storm", spotify_genre),
+         funk = grepl("funk", spotify_genre),
+         disco = grepl("disco", spotify_genre),
+         urbanContemporary = grepl("urban contemporary", spotify_genre),
+         rAndB = grepl("r&b", spotify_genre),
+         lounge = grepl("lounge", spotify_genre),
+         jazz = grepl("jazz", spotify_genre),
+         metal = grepl("metal", spotify_genre),
+         easyListening = grepl("easy listening", spotify_genre),
+         singerSongwriter = grepl("singer-songwriter", spotify_genre),
+         genre = NA
+  )
 
+data$genre[data$rock == TRUE] <- "Rock"
+data$genre[data$pop == TRUE] <- "Pop"
+data$genre[data$country == TRUE] <- "Country"
+data$genre[data$soul == TRUE] <- "Soul"
+data$genre[data$mellowGold == TRUE] <- "MellowGold"
+data$genre[data$folk == TRUE] <- "Folk"
+data$genre[data$rap == TRUE] <- "Rap"
+data$genre[data$adultStandarts == TRUE] <- "Adult Standarts"
+data$genre[data$motown == TRUE] <- "Motown"
+data$genre[data$hipHop == TRUE] <- "Hip Hop"
+data$genre[data$quietStorm == TRUE] <- "Quiet Storm"
+data$genre[data$funk == TRUE] <- "Funk"
+data$genre[data$disco == TRUE] <- "Disco"
+data$genre[data$urbanContemporary == TRUE] <- "Urban Contemporary"
+data$genre[data$rAndB == TRUE] <- "R&B"
+data$genre[data$lounge == TRUE] <- "Lounge"
+data$genre[data$jazz == TRUE] <- "Jazz"
+data$genre[data$metal == TRUE] <- "Metal"
+data$genre[data$easyListening == TRUE] <- "Easy Listening"
+data$genre[data$singerSongwriter == TRUE] <- "Singer-Songwriter"
 
 data_50 <- data %>% 
   subset(WeekID >= "1950-01-01" & WeekID <= "1959-12-31")
@@ -57,12 +108,33 @@ plot1 <- data_50 %>%
   group_by(spotify_genre) %>% 
   ggplot(aes(WeekID, Week.Position, color = SongID)) +
   geom_line() + theme(legend.position = "none")
+
 ```
 
 
 ## Intro
 
-Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have a orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to 
+Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have a orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to listen to music got cheaper and thus more accessible, which created a boom in the music consumption.In 2014, 93% of the US population was listening to music more than 25 hours per week according to Nielsen. That year, the Americans streamed 164 billion songs across all platforms. This project will try to find what were the evolution regarding people's taste in music over the years by comparing a dataset of 28500 songs from 1958 to 2020, regarding their "performance" on the Billboard Hot 100.
+
+## Favorite genre other the years
+
+
+```{r echo = FALSE}
+selectInput("yearChoice", label = "Chose one or more decade:",
+              choices = data$decade,
+            selected = "1950", multiple = TRUE)
+```
+
+```{r, echo=FALSE}
+
+renderPlot({
+  data %>%
+  filter(decade == input$yearChoice) %>%
+  ggplot(aes(WeekID, Week.Position, color = genre)) +
+  geom_line() + theme(legend.position = "none")
+})
+
+```
 
 ```{r cars}
 summary(cars)
@@ -72,7 +144,7 @@ summary(cars)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r, echo=FALSE}
 plot(plot1)
 ```
 

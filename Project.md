@@ -11,7 +11,18 @@ had to know how to play it, or had to pay to go to a concert, an opera…
 but this all changed with the invention of the phonograph, first way to
 have a orchestra at home. It was fairly expensive and thus only the
 wealthiest could access it (only a small possible audience). Through the
-years, the way to
+years, the way to listen to music got cheaper and thus more accessible,
+which created a boom in the music consumption.In 2014, 93% of the US
+population was listening to music more than 25 hours per week according
+to Nielsen. That year, the Americans streamed 164 billion songs across
+all platforms. This project will try to find what were the evolution
+regarding people’s taste in music over the years by comparing a dataset
+of 28500 songs from 1958 to 2020, regarding their “performance” on the
+Billboard Hot 100.
+
+## Favorite genre other the years
+
+![](Project_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ``` r
 summary(cars)
@@ -29,7 +40,7 @@ summary(cars)
 
 You can also embed plots, for example:
 
-![](Project_files/figure-gfm/pressure-1.png)<!-- -->
+![](Project_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 Note that the `echo = FALSE` parameter was added to the code chunk to
 prevent printing of the R code that generated the plot.
