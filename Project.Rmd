@@ -3,7 +3,9 @@ title: "Data Science - Project"
 author: "Michel Poupa"
 date: 2021-05-21
 runtime: shiny
-output: html_document
+output: 
+  html_notebook: 
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}

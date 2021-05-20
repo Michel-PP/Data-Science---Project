@@ -104,8 +104,12 @@ data_10 <- data %>%
   
 data_50 %>% 
   group_by(spotify_genre) %>% 
-  ggplot(aes(WeekID, Week.Position, color = SongID)) +
-  geom_line() + theme(legend.position = "none") 
+  ggplot(aes(WeekID, Week.Position, color = genre)) +
+  geom_line() 
+
+data_50 %>% 
+  ggplot(aes(genre, Peak.Position)) +
+  geom_boxplot()
   
 df <- data %>% 
   select(spotify_genre) %>% 

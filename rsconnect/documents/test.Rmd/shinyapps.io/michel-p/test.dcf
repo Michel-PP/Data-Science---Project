@@ -1,0 +1,13 @@
+name: test
+title: test
+username:
+account: michel-p
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4159724
+bundleId: 4620437
+url: https://michel-p.shinyapps.io/test/
+when: 1621520673.39666
+lastSyncTime: 1621520673.39666
+asMultiple: FALSE
+asStatic: FALSE

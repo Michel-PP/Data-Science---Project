@@ -5,9 +5,9 @@ account: michel-p
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4154722
-bundleId: 4616739
+bundleId: 4618151
 url: https://michel-p.shinyapps.io/Project/
-when: 1621440836.90319
-lastSyncTime: 1621440836.90319
+when: 1621467363.25817
+lastSyncTime: 1621467363.25817
 asMultiple: FALSE
 asStatic: FALSE
