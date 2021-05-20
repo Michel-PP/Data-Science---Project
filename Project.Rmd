@@ -28,6 +28,8 @@ hot100 <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Scienc
 
 genre <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\genres4.csv", sep = ";") %>% slice(1:1046)
 
+medium <- read.csv2("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\medium.csv")
+
 hot100_dates <- hot100 %>% 
   rename(title = Song) %>% 
   select(-SongID) %>% 
@@ -106,6 +108,14 @@ data_00 <- data %>%
 data_10 <- data %>% 
   subset(WeekID >= "2010-01-01" & WeekID <= "2020-12-31")
 
+medium_50 <- data_50 %>% slice(1:1000)
+medium_60 <- data_60 %>% slice(1:1000)
+medium_70 <- data_70 %>% slice(1:1000)
+medium_80 <- data_80 %>% slice(1:1000)
+medium_90 <- data_90 %>% slice(1:1000)
+medium_00 <- data_00 %>% slice(1:1000)
+medium_10 <- data_10 %>% slice(1:1000)
+
 plot1 <- data_50 %>% 
   group_by(spotify_genre) %>% 
   ggplot(aes(WeekID, Week.Position, color = SongID)) +
@@ -118,36 +128,44 @@ plot1 <- data_50 %>%
 
 Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have a orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to listen to music got cheaper and thus more accessible, which created a boom in the music consumption.In 2014, 93% of the US population was listening to music more than 25 hours per week according to Nielsen. That year, the Americans streamed 164 billion songs across all platforms. This project will try to find what were the evolution regarding people's taste in music over the years by comparing a dataset of 28500 songs from 1958 to 2020, regarding their "performance" on the Billboard Hot 100.
 
-## Favorite genre other the years
-
-
-```{r echo = FALSE}
-selectInput("yearChoice", label = "Chose one or more decade:",
-              choices = data$decade,
-            selected = "1950", multiple = TRUE)
-```
+## Favorite genre each decade
 
 ```{r, echo=FALSE}
 
 renderPlot({
-  data %>%
-  filter(decade == input$yearChoice) %>%
-  ggplot(aes(WeekID, Week.Position, color = genre)) +
-  geom_line() + theme(legend.position = "none")
+  medium %>% 
+  ggplot(aes(genre, Peak.Position)) +
+  geom_boxplot() + coord_flip() + facet_wrap(~ decade, nrow = 3) 
 })
 
 ```
 
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
+We can see that across all those years, the favorite musical genre was rock, with other 5'118'248 songs categorized as such. What we can also see is that there was a decrease 
 
 ```{r, echo=FALSE}
-plot(plot1)
+
+renderPlot({
+  medium %>% 
+  ggplot(aes(decade, fill = genre)) +
+  geom_bar(position = "fill") + theme_classic()
+})
+
+```
+```{r echo = FALSE}
+selectInput("yearChoice", label = "Chose one or more decade:",
+              choices = data$decade,
+            selected = "1950", multiple = FALSE)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r, echo=FALSE}
+
+renderPlot({
+  data %>% 
+    filter(decade == input$yearChoice) %>% 
+  ggplot(aes(decade, fill = genre)) +
+  geom_bar(position = "fill") + theme_classic() 
+})
+
+```
+

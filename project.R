@@ -22,6 +22,8 @@ hot100 <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Scienc
 
 genre <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\genres4.csv", sep = ";") %>% slice(1:1046)
 
+medium <- read.csv2("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\medium.csv")
+
 hot100_dates <- hot100 %>% 
   rename(title = Song) %>% 
   select(-SongID) %>% 
@@ -98,18 +100,31 @@ data_00 <- data %>%
   subset(WeekID >= "2000-01-01" & WeekID <= "2009-12-31")
 
 data_10 <- data %>% 
-  subset(WeekID >= "2010-01-01" & WeekID <= "2020-12-31")
+  subset(WeekID >= "2010-01-01" & WeekID <= "2021-12-31")
 
+  medium_50 <- data_50 %>% slice(1:1000)
+  medium_60 <- data_60 %>% slice(1:1000)
+  medium_70 <- data_70 %>% slice(1:1000)
+  medium_80 <- data_80 %>% slice(1:1000)
+  medium_90 <- data_90 %>% slice(1:1000)
+  medium_00 <- data_00 %>% slice(1:1000)
+  medium_10 <- data_10 %>% slice(1:1000)
   
+
+  medium <- full_join(medium,medium_10)
   
 data_50 %>% 
   group_by(spotify_genre) %>% 
   ggplot(aes(WeekID, Week.Position, color = genre)) +
   geom_line() 
 
-data_50 %>% 
+medium %>% 
   ggplot(aes(genre, Peak.Position)) +
-  geom_boxplot()
+  geom_boxplot() + coord_flip() + facet_wrap(~ decade, nrow = 3)
+
+medium %>% 
+  ggplot(aes(decade, fill = genre)) +
+  geom_bar(position = "fill") + theme_classic()
   
 df <- data %>% 
   select(spotify_genre) %>% 
@@ -122,6 +137,19 @@ medium %>%
   mutate(WeekID = dmy(WeekID)) 
 
 write.csv2(table(df) %>%  as_tibble() %>% arrange(desc(n)), file = "C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\genres3.csv", row.names = FALSE)
+write.csv2(medium, file = "C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\medium.csv", row.names = FALSE)
 
 
-  
+```{r, echo=FALSE}
+
+renderPlot({
+  medium %>%
+    filter(decade == input$yearChoice) %>%
+    ggplot(aes(WeekID, Week.Position, color = genre)) +
+    geom_line() 
+})
+
+data %>% 
+  filter(decade == "1950") %>% 
+  ggplot(aes(decade, fill = genre)) +
+  geom_bar(position = "fill") + theme_classic()
