@@ -6,11 +6,12 @@ runtime: shiny
 output: 
   html_notebook: 
     toc: yes
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-library(modelr)
 library(modelr)
 library(mdsr)
 library(Hmisc)
@@ -18,154 +19,167 @@ library(scales)
 library(readxl)
 library(lubridate)
 library(shiny)
-
-as_decade <- function(value){ return(value - value %% 10) }
-
-
-ABitLessThanAMillionSong <- read_xlsx("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\Hot 100 Audio Features.xlsx")
-
-hot100 <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\Hot Stuff.csv")
-
-genre <- read.csv("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\genres4.csv", sep = ";") %>% slice(1:1046)
-
-medium <- read.csv2("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\medium.csv")
-
-hot100_dates <- hot100 %>% 
-  rename(title = Song) %>% 
-  select(-SongID) %>% 
-  mutate(WeekID = as_date(WeekID, format = "%m/%d/%Y"),
-         year = year(WeekID),
-         decade = as_decade(year))
+library(plyr)
+library(collapsibleTree)
+library(broom)
 
 
+medium <- read.csv2("C:\\Users\\Michel\\Documents\\UCR\\2nd Semester\\Data Science\\Codes\\Project\\Data-Science---Project\\medium4.csv")
 
 
-data <- inner_join(ABitLessThanAMillionSong,hot100_dates) %>% 
-  filter(!is.na(danceability)) %>% 
-  mutate(rock = grepl("rock", spotify_genre),
-         pop = grepl("pop", spotify_genre),
-         country = grepl("country", spotify_genre),
-         soul = grepl("soul", spotify_genre),
-         mellowGold = grepl("mellow gold", spotify_genre),
-         folk = grepl("folk", spotify_genre),
-         rap = grepl("rap", spotify_genre),
-         adultStandarts = grepl("adult standarts", spotify_genre),
-         motown = grepl("motown", spotify_genre),
-         hipHop = grepl("hip hop", spotify_genre),
-         quietStorm = grepl("quiet storm", spotify_genre),
-         funk = grepl("funk", spotify_genre),
-         disco = grepl("disco", spotify_genre),
-         urbanContemporary = grepl("urban contemporary", spotify_genre),
-         rAndB = grepl("r&b", spotify_genre),
-         lounge = grepl("lounge", spotify_genre),
-         jazz = grepl("jazz", spotify_genre),
-         metal = grepl("metal", spotify_genre),
-         easyListening = grepl("easy listening", spotify_genre),
-         singerSongwriter = grepl("singer-songwriter", spotify_genre),
-         genre = NA
-  )
-
-data$genre[data$rock == TRUE] <- "Rock"
-data$genre[data$pop == TRUE] <- "Pop"
-data$genre[data$country == TRUE] <- "Country"
-data$genre[data$soul == TRUE] <- "Soul"
-data$genre[data$mellowGold == TRUE] <- "MellowGold"
-data$genre[data$folk == TRUE] <- "Folk"
-data$genre[data$rap == TRUE] <- "Rap"
-data$genre[data$adultStandarts == TRUE] <- "Adult Standarts"
-data$genre[data$motown == TRUE] <- "Motown"
-data$genre[data$hipHop == TRUE] <- "Hip Hop"
-data$genre[data$quietStorm == TRUE] <- "Quiet Storm"
-data$genre[data$funk == TRUE] <- "Funk"
-data$genre[data$disco == TRUE] <- "Disco"
-data$genre[data$urbanContemporary == TRUE] <- "Urban Contemporary"
-data$genre[data$rAndB == TRUE] <- "R&B"
-data$genre[data$lounge == TRUE] <- "Lounge"
-data$genre[data$jazz == TRUE] <- "Jazz"
-data$genre[data$metal == TRUE] <- "Metal"
-data$genre[data$easyListening == TRUE] <- "Easy Listening"
-data$genre[data$singerSongwriter == TRUE] <- "Singer-Songwriter"
-
-data_50 <- data %>% 
-  subset(WeekID >= "1950-01-01" & WeekID <= "1959-12-31")
-
-data_60 <- data %>% 
-  subset(WeekID >= "1960-01-01" & WeekID <= "1969-12-31")
-
-data_70 <- data %>% 
-  subset(WeekID >= "1970-01-01" & WeekID <= "1979-12-31")
-
-data_80 <- data %>% 
-  subset(WeekID >= "1980-01-01" & WeekID <= "1989-12-31")
-
-data_90 <- data %>% 
-  subset(WeekID >= "1989-01-01" & WeekID <= "1999-12-31")
+medium %>% 
+  mutate(danceability = as.integer(danceability * 1000))
 
 
-data_00 <- data %>% 
-  subset(WeekID >= "2000-01-01" & WeekID <= "2009-12-31")
-
-data_10 <- data %>% 
-  subset(WeekID >= "2010-01-01" & WeekID <= "2020-12-31")
-
-medium_50 <- data_50 %>% slice(1:1000)
-medium_60 <- data_60 %>% slice(1:1000)
-medium_70 <- data_70 %>% slice(1:1000)
-medium_80 <- data_80 %>% slice(1:1000)
-medium_90 <- data_90 %>% slice(1:1000)
-medium_00 <- data_00 %>% slice(1:1000)
-medium_10 <- data_10 %>% slice(1:1000)
-
-plot1 <- data_50 %>% 
-  group_by(spotify_genre) %>% 
-  ggplot(aes(WeekID, Week.Position, color = SongID)) +
-  geom_line() + theme(legend.position = "none")
+mod1 <- lm(danceability ~ Peak.Position, data = medium)
 
 ```
 
 
 ## Intro
 
-Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have a orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to listen to music got cheaper and thus more accessible, which created a boom in the music consumption.In 2014, 93% of the US population was listening to music more than 25 hours per week according to Nielsen. That year, the Americans streamed 164 billion songs across all platforms. This project will try to find what were the evolution regarding people's taste in music over the years by comparing a dataset of 28500 songs from 1958 to 2020, regarding their "performance" on the Billboard Hot 100.
+Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have an orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to listen to music got cheaper and thus more accessible, which created a boom in the music consumption. In 2014, 93% of the US population was listening to music more than 25 hours per week according to Nielsen. That year, the Americans streamed 164 billion songs across all platforms. This project will try to find what were the evolution regarding people's taste in music over the years by comparing a dataset of 28500 songs from 1958 to 2020 and analyze the songs "performances" on the Billboard Hot 100 regarding their specificities (genre, duration...).
 
-## Favorite genre each decade
+## Risks regarding objectivity
+
+Due to the size of the data file, it would take too long to use all of the available data, which means that I've picked 10'000 random songs per decade. This might raise a few concerns.  First, as it is a small sample, it will have a lesser objectivity, but second, as the music consumption has sky rocketed over the years, the ratio between the different decades will be biased, as the same amount of song are chosen for each decade. A way to counteract with it would've have been to take a ratio of: total songs/songs from the decade. 
+
+## Favorite genre
+
+
+```{r, echo=FALSE}
+
+renderPlot({
+  medium %>% 
+  ggplot(aes(genre, fill = decade)) +
+  geom_bar() + coord_flip() + labs(y = "", x = "") + 
+  ggtitle("Amount of songs from the 20 mosts popular \ngenres from 1958 to 2020") +
+  theme(plot.title = element_text(face="bold", size = 18))
+})
+```
+_Figure 1_
+
+
+We can see that across all those years, the favorite musical genre was pop, with quite a large margin,but one may wonder what was that ratio per decade :
+
+
+```{r echo = FALSE}
+sliderInput("yearChoice", label = "Chose a decade:",
+              min = 1950, max = 2020, value = 1950, step = 10)
+```
+
+
+
+```{r, echo=FALSE}
+
+renderPlot({
+  medium %>% 
+  ggplot(aes(decade, fill = genre)) +
+  geom_bar(position = "fill") + coord_flip() + labs(y = "", x = "") + 
+  ggtitle("Amount of songs from the 20 mosts popular \ngenres from 1958 to 2020") +
+  theme(plot.title = element_text(face="bold", size = 18)) + theme_classic()
+  
+})
+```
+_Figure 2_
+```{r, echo=FALSE}
+renderPlot({
+  medium %>% 
+    filter(decade == input$yearChoice) %>% 
+  ggplot(aes(decade, fill = genre)) +
+  geom_bar(position = "fill") + theme_classic() + labs(y = "", x = "")
+
+  })
+
+```
+_Figure 3_
+
+This graphs confirm that pop is the most listened genre over the years, as it is always in the 3 most listened to genres of the decade. 
+We can also see that, even if it's popularity diminished in the 60's and 70's, it has kept growing in popularity since then.
+
+## Genre relating to position on the Bilboard Hot 100
+
+
 
 ```{r, echo=FALSE}
 
 renderPlot({
   medium %>% 
   ggplot(aes(genre, Peak.Position)) +
-  geom_boxplot() + coord_flip() + facet_wrap(~ decade, nrow = 3) 
+  geom_boxplot() + coord_flip() + labs(y = "", x = "")
 })
 
-```
 
-We can see that across all those years, the favorite musical genre was rock, with other 5'118'248 songs categorized as such. What we can also see is that there was a decrease 
+```
+_Figure 4_
+
+We can see that, in this data set, Rap is the genre with the highest position on average. This is interesting as Rap is a very young genre, and has only entered the main stream in the recent years. It might thus be interesting to check it's evolution over time:
 
 ```{r, echo=FALSE}
 
 renderPlot({
   medium %>% 
-  ggplot(aes(decade, fill = genre)) +
-  geom_bar(position = "fill") + theme_classic()
+  filter(genre == "Rap") %>% 
+  ggplot(aes(genre, Peak.Position)) +
+  geom_boxplot() + coord_flip() + facet_wrap(~ decade, nrow = 2) + labs(y = "", x = "")
 })
 
-```
-```{r echo = FALSE}
-selectInput("yearChoice", label = "Chose one or more decade:",
-              choices = data$decade,
-            selected = "1950", multiple = FALSE)
-```
 
+```
+_Figure 5_
+
+We can notice that it started with a fairly high score (having an average around 10), then decreased in the following year only to achieve very high rankings in the 200's.
+
+Let's see how it faces compared to others:
 
 ```{r, echo=FALSE}
 
 renderPlot({
-  data %>% 
-    filter(decade == input$yearChoice) %>% 
-  ggplot(aes(decade, fill = genre)) +
-  geom_bar(position = "fill") + theme_classic() 
+  medium %>% 
+  ggplot(aes(genre, Peak.Position)) +
+  geom_boxplot() + coord_flip() + facet_wrap(~ decade, nrow = 2) + labs(y = "", x = "")
 })
+
+
+```
+_Figure 6_
+
+The main thing that we can notice from this graph, and figure 2, is the disappearance from variety other the years. Today, the the genre are either big or small while in 1960, they could compare in size.
+
+## Audience percentage compared to position on the Billboard Hot 100
+
+One could argue that, if you have the highest amount of listeners, you should be the most highly ranked. But, in the two previous subsections, we have realized that the most listened to genre (pop) was different from the highest ranking genre on average (rap). It would thus be interesting to analyze if there is a correlation between the two. I sadly cannot figure out how to calculate that percentage... I will thus compare the danceability of the track to its ranking.
+
+```{r boxed-summary, echo=FALSE}
+
+  summary(mod1)
+
 
 ```
 
+We see that R² has a value of 0.002257, which means that there is no correlation between danceability and the ranking.
+
+Let's compare with the other categories:
+
+
+Category | R²
+------ | ------
+spotify_track_duration_ms   | 0.003267 
+tempo | 5.528e-06
+valence | 6.814e-05
+liveness | 1.114e-05
+instrumentalness | 0.0001341
+accousticness | 0.0001341
+speechiness | 0.000848
+loudness | 0.0002262
+energy | 0.0003288
+
+## Conclusion
+
+In conclusion, there has been hardly any correlation found between the songs specificities (genre, duration,...) and it's rank on the billboard hot 100. This might be due to the small sample size, but it is very unlikely as it should be representative.
+
+## Sources
+
+- Nielsen, "EVERYONE LISTENS TO MUSIC, BUT HOW WE LISTEN IS CHANGING", 01-22-2015.
+- Albright, Dann: "The Evolution of Music Consumption: How We Got Here", 04-20-2015
+- Pavlin, Kaylin: "Understanding + classifying genres using Spotify audio features", 12-20-2019
