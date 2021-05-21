@@ -1,3 +1,4 @@
 # Data Science - Project
- Data Science Project Spring 2021
+ Data Science Project Spring 2021.
+ 
 Music consumption through the years has highly evolved and democratized itself. Before 1877, if someone wanted to listen to music, they either had to know how to play it, or had to pay to go to a concert, an opera... but this all changed with the invention of the phonograph, first way to have an orchestra at home. It was fairly expensive and thus only the wealthiest could access it (only a small possible audience). Through the years, the way to listen to music got cheaper and thus more accessible, which created a boom in the music consumption. In 2014, 93% of the US population was listening to music more than 25 hours per week according to Nielsen. That year, the Americans streamed 164 billion songs across all platforms. This project will try to find what were the evolution regarding people's taste in music over the years by comparing a dataset of 28500 songs from 1958 to 2020 and analyze the songs "performances" on the Billboard Hot 100 regarding their specificities (genre, duration...).
